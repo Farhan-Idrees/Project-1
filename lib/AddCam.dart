@@ -42,7 +42,7 @@ class _AddCamState extends State<AddCam> {
                 key: _formKey,
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: CustomTextFormField(
+                  child: CustomFormField(
                     hintText: "Enter your username",
                     icon: Icons.person,
                     controller: _usernameController,
@@ -72,7 +72,7 @@ class _AddCamState extends State<AddCam> {
               ),
               Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: CustomTextFormField(
+                child: CustomFormField(
                   hintText: "Enter your email",
                   icon: Icons.mail,
                   controller: _emailController,
