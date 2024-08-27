@@ -1,7 +1,8 @@
 // ignore_for_file: unnecessary_import, depend_on_referenced_packages, prefer_const_constructors
 
-import 'package:cameye/AddCam.dart';
+import 'package:cameye/AddDetails.dart';
 import 'package:cameye/CustomFormField.dart';
+import 'package:cameye/Firebase.dart';
 import 'package:cameye/Signup.dart';
 import 'package:cameye/TermsConditions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -133,27 +134,8 @@ class _LoginState extends State<Login> {
                           alignment: Alignment.center),
                       onPressed: () async {
                         if (isChecked) {
-                          try {
-                            await FirebaseAuth.instance
-                                .createUserWithEmailAndPassword(
-                                    email: _emailController.text,
-                                    password: _passwordController.text)
-                                .whenComplete(() {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AddCam(),
-                                ),
-                              );
-                            });
-                          } on FirebaseAuthException catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(e.message.toString())));
-                          }
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(
-                                  'Please accept our terms and conditions first.')));
+                          AuthFunctions.login(_emailController.text,
+                              _passwordController.text, context);
                         }
                       },
                       child: Text(

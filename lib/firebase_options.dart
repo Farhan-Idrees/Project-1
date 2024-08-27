@@ -7,13 +7,13 @@ import 'package:flutter/foundation.dart'
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
 /// Example:
-/// dart
+/// ```dart
 /// import 'firebase_options.dart';
 /// // ...
 /// await Firebase.initializeApp(
 ///   options: DefaultFirebaseOptions.currentPlatform,
 /// );
-/// 
+/// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
@@ -23,17 +23,17 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
           'you can reconfigure this by running the FlutterFire CLI again.',
         );
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -47,29 +47,30 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDS_lTSneel3geXrNyXerrp4Lz2vMIFRUU',
-    appId: '1:860612983796:web:619188ed5e121e6e8717a1',
-    messagingSenderId: '860612983796',
-    projectId: 'cameye-31121',
-    authDomain: 'cameye-31121.firebaseapp.com',
-    storageBucket: 'cameye-31121.appspot.com',
-    measurementId: 'G-CE8MVFL2MF',
+    apiKey: 'AIzaSyDAvk4iWLF51IGP1YmFUvGZA8oRKhQPHbA',
+    appId: '1:896075086092:web:8cbf6241151c8cb211b129',
+    messagingSenderId: '896075086092',
+    projectId: 'cameye-9ae6a',
+    authDomain: 'cameye-9ae6a.firebaseapp.com',
+    storageBucket: 'cameye-9ae6a.appspot.com',
+    measurementId: 'G-G4WT8RP5T4',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyB5gEuwEdDsX5mdvQZjMG2lna7ROaf8aJ8',
-    appId: '1:860612983796:android:79607953558874df8717a1',
-    messagingSenderId: '860612983796',
-    projectId: 'cameye-31121',
-    storageBucket: 'cameye-31121.appspot.com',
+    apiKey: 'AIzaSyBWJiZuPuDke7399LVOiXnlCGEeI21ho2c',
+    appId: '1:896075086092:android:e7ce2a3335d1de2611b129',
+    messagingSenderId: '896075086092',
+    projectId: 'cameye-9ae6a',
+    storageBucket: 'cameye-9ae6a.appspot.com',
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAC9ydNpU39EA9VvumGA0ss55LoGJuHbf0',
-    appId: '1:860612983796:ios:4161c56e69963af38717a1',
-    messagingSenderId: '860612983796',
-    projectId: 'cameye-31121',
-    storageBucket: 'cameye-31121.appspot.com',
-    iosBundleId: 'com.example.cameye',
-);
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyDAvk4iWLF51IGP1YmFUvGZA8oRKhQPHbA',
+    appId: '1:896075086092:web:0783edf0170ffd8511b129',
+    messagingSenderId: '896075086092',
+    projectId: 'cameye-9ae6a',
+    authDomain: 'cameye-9ae6a.firebaseapp.com',
+    storageBucket: 'cameye-9ae6a.appspot.com',
+    measurementId: 'G-8Z9JXPE9FK',
+  );
 }

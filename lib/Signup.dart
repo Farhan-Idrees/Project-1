@@ -1,9 +1,9 @@
 import 'package:cameye/CustomFormField.dart';
+import 'package:cameye/Firebase.dart';
 import 'package:cameye/Login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -139,9 +139,10 @@ class _SignUpState extends State<SignUp> {
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your password';
-                        } else if (!value.contains(RegExp(
-                            r'^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%?&])[A-Za-z\d@$!-_%?&]{12,}$'))) {
-                          return 'Password must contain 12 characters at least \nUppercase and lowercase letter, \nA number and one special character.';
+                        } else if (!RegExp(
+                                r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{12,}$')
+                            .hasMatch(value)) {
+                          return 'Password must contain at least 12 characters, \nincluding an uppercase and a lowercase letter, \na number, and one special character.';
                         }
                         return null;
                       },
@@ -162,42 +163,14 @@ class _SignUpState extends State<SignUp> {
                                   WidgetStatePropertyAll(Colors.white),
                             ),
                             onPressed: () async {
-                              try {
-                                await FirebaseAuth.instance
-                                    .createUserWithEmailAndPassword(
-                                        email: _emailController.text,
-                                        password: _passwordController.text)
-                                    .whenComplete(() async {
-                                  try {
-                                    await FirebaseFirestore.instance
-                                        .collection('users')
-                                        .doc(FirebaseAuth
-                                            .instance.currentUser!.uid)
-                                        .set({
-                                      'email': _emailController.text,
-                                      'password': _passwordController.text,
-                                      'first_name': _firstNameController.text,
-                                      'last_name': _lastNameController.text,
-                                      'phone_number': _phoneController.text,
-                                    }).whenComplete(() {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => Login(),
-                                        ),
-                                      );
-                                    });
-                                  } on FirebaseAuthException catch (error) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                            content: Text(
-                                                error.message.toString())));
-                                  }
-                                });
-                              } on FirebaseAuthException catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content: Text(e.message.toString())));
+                              if (_formKey.currentState!.validate()) {
+                                AuthFunctions.signUp(
+                                    _firstNameController.text,
+                                    _lastNameController.text,
+                                    _emailController.text,
+                                    _phoneController.text,
+                                    _passwordController.text,
+                                    context);
                               }
                             },
                             child: const Text(
@@ -215,7 +188,7 @@ class _SignUpState extends State<SignUp> {
             ),
           ],
         ),
-     ),
-);
-}
+      ),
+    );
+  }
 }

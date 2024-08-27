@@ -3,14 +3,14 @@
 import 'package:cameye/customFormField.dart';
 import 'package:flutter/material.dart';
 
-class AddCam extends StatefulWidget {
-  const AddCam({super.key});
+class AddDetails extends StatefulWidget {
+  const AddDetails({super.key});
 
   @override
-  State<AddCam> createState() => _AddCamState();
+  State<AddDetails> createState() => _AddDetailsState();
 }
 
-class _AddCamState extends State<AddCam> {
+class _AddDetailsState extends State<AddDetails> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -109,7 +109,7 @@ class _AddCamState extends State<AddCam> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AddCam(),
+                              builder: (context) => AddDetails(),
                             ),
                           );
                         } else {}
