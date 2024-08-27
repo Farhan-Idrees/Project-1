@@ -3,21 +3,22 @@
 import 'dart:io';
 
 import 'package:cameye/AddCam.dart';
+import 'package:cameye/ListUsers.dart';
 import 'package:cameye/customFormField.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class AddDetails extends StatefulWidget {
-  const AddDetails({super.key});
+class AddUsers extends StatefulWidget {
+  const AddUsers({super.key});
 
   @override
-  State<AddDetails> createState() => _AddDetailsState();
+  State<AddUsers> createState() => _AddUsersState();
 }
 
-class _AddDetailsState extends State<AddDetails> {
+class _AddUsersState extends State<AddUsers> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _relationController = TextEditingController();
 
   File? _image;
   Future<void> _pickImage() async {
@@ -37,7 +38,7 @@ class _AddDetailsState extends State<AddDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add Details"),
+        title: Text("Add Users"),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -48,7 +49,7 @@ class _AddDetailsState extends State<AddDetails> {
                 height: 50,
               ),
               Text(
-                "Verify your details",
+                "Add Users in your Trust Circle",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24,
@@ -62,13 +63,13 @@ class _AddDetailsState extends State<AddDetails> {
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: CustomFormField(
-                    hintText: "Enter your email",
-                    icon: Icons.email_outlined,
-                    controller: _emailController,
-                    fieldname: "Email",
+                    hintText: "Enter Authorize user Name",
+                    icon: Icons.person,
+                    controller: _nameController,
+                    fieldname: "Authorize User Name",
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your Email';
+                        return 'Please enter your Authorize user Name"';
                       }
                       return null;
                     },
@@ -96,43 +97,25 @@ class _AddDetailsState extends State<AddDetails> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  "Upload your photo",
+                  "Upload Authorize user photo",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: CustomFormField(
-                  hintText: "Enter your password",
-                  icon: Icons.password_sharp,
-                  controller: _passwordController,
-                  fieldname: "Password",
+                  hintText: "Enter user relation",
+                  icon: Icons.person_add_alt_outlined,
+                  controller: _relationController,
+                  fieldname: "Relation",
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
+                      return 'Please enter authorize user relation ';
                     }
                     return null;
                   },
                 ),
               ),
-              ElevatedButton(
-                  onPressed: () {
-                    style:
-                    ButtonStyle(
-                      shape: WidgetStateProperty.all(RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30))),
-                      backgroundColor: const WidgetStatePropertyAll(
-                        Color.fromARGB(255, 0, 0, 0),
-                      ),
-                      minimumSize: const WidgetStatePropertyAll(
-                        Size(double.infinity, 50),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    "Verify",
-                    style: TextStyle(color: Colors.white),
-                  )),
               Center(
                 child: Padding(
                   padding: EdgeInsets.all(8.0),
@@ -148,13 +131,13 @@ class _AddDetailsState extends State<AddDetails> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AddCam(),
+                              builder: (context) => ListUsers(),
                             ),
                           );
                         } else {}
                       },
                       child: Text(
-                        "Verify",
+                        "Add User",
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,

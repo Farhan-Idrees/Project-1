@@ -103,21 +103,39 @@ class _LoginState extends State<Login> {
                               }),
                           Text("I have agrred your "),
                           GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          TermsAndConditions(),
-                                    ));
-                              },
-                              child: Text(
-                                "tems & conditions.",
-                                style: TextStyle(
-                                    color: Colors.indigoAccent, fontSize: 14),
-                              )),
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TermsAndConditions(),
+                                  ));
+                            },
+                            child: Text(
+                              "tems & conditions.",
+                              style: TextStyle(
+                                  color: Colors.indigoAccent, fontSize: 14),
+                            ),
+                          ),
                         ],
                       ),
+                      GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SignUp(),
+                                ));
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "forget password",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue,
+                                  fontSize: 18),
+                            ),
+                          ))
                     ],
                   ),
                 ),
@@ -149,25 +167,35 @@ class _LoginState extends State<Login> {
                   ),
                 ),
               ),
-              Text(
-                "Don't have an account?",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Don't have an account? ",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SignUp(),
+                            ));
+                      },
+                      child: Text(
+                        "Signup",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                            fontSize: 18),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SignUp(),
-                        ));
-                  },
-                  child: Text(
-                    "Signup",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                        fontSize: 16),
-                  ))
             ],
           ),
         ),

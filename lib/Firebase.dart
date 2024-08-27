@@ -23,7 +23,7 @@ class AuthFunctions {
           context, MaterialPageRoute(builder: (context) => AddDetails()));
     } catch (e) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("$Error")));
+          .showSnackBar(SnackBar(content: Text("Error: $e")));
     }
   }
   // Signup Function
@@ -48,7 +48,7 @@ class AuthFunctions {
         'last_name': Lname,
         'email': email,
         'phone_number': phoneNumber,
-        'password': password,
+        // 'password': password,
       });
 
       Navigator.pushReplacement(

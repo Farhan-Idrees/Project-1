@@ -2,42 +2,28 @@
 
 import 'dart:io';
 
-import 'package:cameye/AddCam.dart';
+import 'package:cameye/AddUser.dart';
 import 'package:cameye/customFormField.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class AddDetails extends StatefulWidget {
-  const AddDetails({super.key});
+class AddCam extends StatefulWidget {
+  const AddCam({super.key});
 
   @override
-  State<AddDetails> createState() => _AddDetailsState();
+  State<AddCam> createState() => _AddCamState();
 }
 
-class _AddDetailsState extends State<AddDetails> {
+class _AddCamState extends State<AddCam> {
   final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  File? _image;
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      } else {
-        _image = null;
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add Details"),
+        title: Text("Add Cam"),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -48,7 +34,7 @@ class _AddDetailsState extends State<AddDetails> {
                 height: 50,
               ),
               Text(
-                "Verify your details",
+                "Add Camera details",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24,
@@ -62,77 +48,37 @@ class _AddDetailsState extends State<AddDetails> {
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: CustomFormField(
-                    hintText: "Enter your email",
-                    icon: Icons.email_outlined,
-                    controller: _emailController,
-                    fieldname: "Email",
+                    hintText: "Cam0",
+                    icon: Icons.camera_alt_sharp,
+                    controller: _usernameController,
+                    fieldname: "Camera Name",
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your Email';
+                        return 'Please enter your Camera name';
                       }
                       return null;
                     },
                   ),
                 ),
               ),
-              SizedBox(
-                height: 30,
-              ),
-              GestureDetector(
-                onTap: _pickImage,
-                child: CircleAvatar(
-                  radius: 75,
-                  backgroundColor: Colors.grey[300],
-                  backgroundImage: _image != null ? FileImage(_image!) : null,
-                  child: _image == null
-                      ? Icon(
-                          Icons.person,
-                          size: 75,
-                          color: Colors.grey[700],
-                        )
-                      : null,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "Upload your photo",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: CustomFormField(
-                  hintText: "Enter your password",
-                  icon: Icons.password_sharp,
-                  controller: _passwordController,
-                  fieldname: "Password",
+                  hintText: "Enter Camera IP address",
+                  icon: Icons.camera_front,
+                  controller: _emailController,
+                  fieldname: "CamIP",
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
+                      return 'Please enter your camera IP address';
                     }
                     return null;
                   },
                 ),
               ),
-              ElevatedButton(
-                  onPressed: () {
-                    style:
-                    ButtonStyle(
-                      shape: WidgetStateProperty.all(RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30))),
-                      backgroundColor: const WidgetStatePropertyAll(
-                        Color.fromARGB(255, 0, 0, 0),
-                      ),
-                      minimumSize: const WidgetStatePropertyAll(
-                        Size(double.infinity, 50),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    "Verify",
-                    style: TextStyle(color: Colors.white),
-                  )),
+              SizedBox(
+                height: 50,
+              ),
               Center(
                 child: Padding(
                   padding: EdgeInsets.all(8.0),
@@ -148,7 +94,7 @@ class _AddDetailsState extends State<AddDetails> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AddCam(),
+                              builder: (context) => AddUsers(),
                             ),
                           );
                         } else {}
