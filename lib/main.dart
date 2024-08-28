@@ -1,5 +1,7 @@
-
-
+import 'package:cameye/AddCam.dart';
+import 'package:cameye/AddDetails.dart';
+import 'package:cameye/AddUser.dart';
+import 'package:cameye/ListUsers.dart';
 import 'package:cameye/firebase_options.dart';
 import 'package:cameye/login.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,6 +22,6 @@ class CamEye extends StatelessWidget {
       // themeMode: ,
       debugShowCheckedModeBanner: false,
       home: Login(),
-);
-}
+    );
+  }
 }

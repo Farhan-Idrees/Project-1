@@ -1,5 +1,8 @@
 // ignore_for_file: avoid_types_as_parameter_names, non_constant_identifier_names, use_build_context_synchronously
+import 'dart:typed_data';
 
+import 'package:cameye/AddCam.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cameye/AddDetails.dart';
 import 'package:cameye/Login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,6 +14,7 @@ class AuthFunctions {
 
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final FirebaseStorage _storage = FirebaseStorage.instance;
 
 //Login Function
 
@@ -20,7 +24,7 @@ class AuthFunctions {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
 
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => AddDetails()));
+          context, MaterialPageRoute(builder: (context) => AddCam()));
     } catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Error: $e")));
@@ -88,5 +92,39 @@ class AuthFunctions {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => Login()));
     });
+  }
+
+// Add CAm
+  static Future<void> addCam(
+      String Camname, String CamIP, BuildContext context) async {
+    try {
+      // Get the user's UID
+      String uid = FirebaseAuth.instance.currentUser!.uid;
+
+      // Create a new document in the devices subcollection
+      DocumentReference deviceRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('Devices')
+          .doc();
+
+      // Generate a unique ID for the device
+      String deviceId = deviceRef.id;
+
+      // Add the device details to the document
+      await deviceRef.set({
+        'cam_name': Camname,
+        'cam_IP': CamIP,
+        'device_id': deviceId, // store the unique ID
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Device Added Successfully "),
+      ));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Error: $e "),
+      ));
+    }
   }
 }

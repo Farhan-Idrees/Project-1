@@ -1,10 +1,12 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cameye/AddCam.dart';
 import 'package:cameye/ListUsers.dart';
 import 'package:cameye/customFormField.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -76,31 +78,6 @@ class _AddUsersState extends State<AddUsers> {
                   ),
                 ),
               ),
-              SizedBox(
-                height: 30,
-              ),
-              GestureDetector(
-                onTap: _pickImage,
-                child: CircleAvatar(
-                  radius: 75,
-                  backgroundColor: Colors.grey[300],
-                  backgroundImage: _image != null ? FileImage(_image!) : null,
-                  child: _image == null
-                      ? Icon(
-                          Icons.person,
-                          size: 75,
-                          color: Colors.grey[700],
-                        )
-                      : null,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "Upload Authorize user photo",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: CustomFormField(
@@ -116,6 +93,30 @@ class _AddUsersState extends State<AddUsers> {
                   },
                 ),
               ),
+              GestureDetector(
+                  onTap: _pickImage,
+                  child: _image != null
+                      ? CircleAvatar(
+                          radius: 75,
+                          backgroundImage: FileImage(_image!),
+                        )
+                      : CircleAvatar(
+                          radius: 75,
+                          child: Icon(
+                            Icons.person,
+                            size: 75,
+                            // color: Colors.grey[700],
+                          ))),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Upload Authorize user photo",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              SizedBox(
+                height: 30,
+              ),
               Center(
                 child: Padding(
                   padding: EdgeInsets.all(8.0),
@@ -128,12 +129,16 @@ class _AddUsersState extends State<AddUsers> {
                           alignment: Alignment.center),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ListUsers(),
-                            ),
-                          );
+                          UploadVerify(_nameController.text.toString(),
+                                  _relationController.text.toString())
+                              .then((_) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ListUsers(),
+                              ),
+                            );
+                          });
                         } else {}
                       },
                       child: Text(
@@ -153,4 +158,25 @@ class _AddUsersState extends State<AddUsers> {
       ),
     );
   }
+
+  UploadVerify(String name, String relation) async {
+     UploadData() async {
+    Task task = FirebaseStorage.instance
+        .ref("User Photo")
+        .child(_nameController.text.toString())
+        .putFile(_image!);
+    TaskSnapshot taskSnapshot = await task;
+    String Url = await taskSnapshot.ref.getDownloadURL();
+    FirebaseFirestore.instance
+        .collection("User Data")
+        .doc(_nameController.text.toString())
+        .set({
+      "Name": _nameController.text.toString(),
+      "Relation": _relationController.text.toString(), // fix typo here
+      "Image": Url
+    });
+  }
+  }
+
+ 
 }

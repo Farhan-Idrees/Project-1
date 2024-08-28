@@ -3,6 +3,8 @@
 import 'dart:io';
 
 import 'package:cameye/AddUser.dart';
+import 'package:cameye/Firebase.dart';
+import 'package:cameye/ListUsers.dart';
 import 'package:cameye/customFormField.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,8 +18,8 @@ class AddCam extends StatefulWidget {
 
 class _AddCamState extends State<AddCam> {
   final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
-  final _emailController = TextEditingController();
+  final _camNameController = TextEditingController();
+  final _camIPController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +52,7 @@ class _AddCamState extends State<AddCam> {
                   child: CustomFormField(
                     hintText: "Cam0",
                     icon: Icons.camera_alt_sharp,
-                    controller: _usernameController,
+                    controller: _camNameController,
                     fieldname: "Camera Name",
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -66,8 +68,8 @@ class _AddCamState extends State<AddCam> {
                 child: CustomFormField(
                   hintText: "Enter Camera IP address",
                   icon: Icons.camera_front,
-                  controller: _emailController,
-                  fieldname: "CamIP",
+                  controller: _camIPController,
+                  fieldname: "Cam IP Address",
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your camera IP address';
@@ -79,35 +81,79 @@ class _AddCamState extends State<AddCam> {
               SizedBox(
                 height: 50,
               ),
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: TextButton(
-                      style: ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll(Colors.black),
-                          foregroundColor: WidgetStatePropertyAll(Colors.white),
-                          alignment: Alignment.center),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AddUsers(),
-                            ),
-                          );
-                        } else {}
-                      },
-                      child: Text(
-                        "Verify",
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    AuthFunctions.addCam(_camNameController.text,
+                        _camIPController.text, context);
+                  }
+                },
+                style: ButtonStyle(
+                  shape: WidgetStateProperty.all(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30))),
+                  backgroundColor: const WidgetStatePropertyAll(
+                    Color.fromARGB(255, 0, 0, 0),
                   ),
+                  minimumSize: const WidgetStatePropertyAll(
+                    Size(250, 50),
+                  ),
+                ),
+                child: Text(
+                  "Save",
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(bottom: 20.0),
+        child: SizedBox(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddCam(),
+                      ));
+                },
+                style: ButtonStyle(
+                  shape: WidgetStateProperty.all(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30))),
+                  backgroundColor: const WidgetStatePropertyAll(
+                    Color.fromARGB(255, 0, 0, 0),
+                  ),
+                  minimumSize: const WidgetStatePropertyAll(
+                    Size(150, 50),
+                  ),
+                ),
+                child: Text(
+                  "Add Another Cam",
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ListUsers(),
+                      ));
+                },
+                style: ButtonStyle(
+                    shape: WidgetStateProperty.all(RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30))),
+                    backgroundColor: const WidgetStatePropertyAll(
+                      Color.fromARGB(255, 0, 0, 0),
+                    ),
+                    minimumSize: const WidgetStatePropertyAll(Size(150, 50))),
+                child: Text(
+                  "Next",
+                  style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
               ),
             ],

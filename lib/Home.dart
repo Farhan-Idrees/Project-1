@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
-
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -15,17 +13,26 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "CamEye",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          "Home",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
-        //backgroundColor: Colors.black,
+        // backgroundColor: Colors.black,
       ),
-      drawer: Drawer(
-        child: Column(
-          children: [],
-        ),
-     ),
-);
-}
+      body: Center(
+        child: Image.asset("assets/Logo.png"),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.settings), label: 'Settings'),
+          BottomNavigationBarItem(icon: Icon(Icons.logout), label: 'Logout'),
+        ],
+      ),
+    );
+  }
 }
