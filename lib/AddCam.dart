@@ -1,11 +1,11 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_import, file_names
 
 import 'dart:io';
 
 import 'package:cameye/AddUser.dart';
+import 'package:cameye/CustomFormWidgets.dart';
 import 'package:cameye/Firebase.dart';
 import 'package:cameye/ListUsers.dart';
-import 'package:cameye/customFormField.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -138,10 +138,10 @@ class _AddCamState extends State<AddCam> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ListUsers(),
+                        builder: (context) => AddUsers(),
                       ));
                 },
                 style: ButtonStyle(

@@ -1,12 +1,14 @@
-// ignore_for_file: unnecessary_import, depend_on_referenced_packages, prefer_const_constructors
+// ignore_for_file: unnecessary_import, depend_on_referenced_packages, prefer_const_constructors, file_names, unused_import
 
 import 'package:cameye/AddDetails.dart';
-import 'package:cameye/CustomFormField.dart';
+import 'package:cameye/CustomFormWidgets.dart';
 import 'package:cameye/Firebase.dart';
+import 'package:cameye/ForgetPassword.dart';
 import 'package:cameye/Signup.dart';
 import 'package:cameye/TermsConditions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -20,6 +22,8 @@ class _LoginState extends State<Login> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool isChecked = false;
+  bool loading = false;
+  bool obscureText = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,6 +84,16 @@ class _LoginState extends State<Login> {
                         icon: Icons.password,
                         controller: _passwordController,
                         fieldname: "Password",
+                        obsecuretxt: obscureText,
+                        suffixicn: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                obscureText = !obscureText;
+                              });
+                            },
+                            icon: obscureText
+                                ? Icon(Icons.visibility_off)
+                                : Icon(Icons.visibility)),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Enter your password';
@@ -123,7 +137,7 @@ class _LoginState extends State<Login> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => SignUp(),
+                                  builder: (context) => ForgetPassword(),
                                 ));
                           },
                           child: Padding(
@@ -151,18 +165,30 @@ class _LoginState extends State<Login> {
                           foregroundColor: WidgetStatePropertyAll(Colors.white),
                           alignment: Alignment.center),
                       onPressed: () async {
-                        if (isChecked) {
-                          AuthFunctions.login(_emailController.text,
-                              _passwordController.text, context);
+                        if (_formKey.currentState!.validate()) {
+                          if (isChecked) {
+                            setState(() {
+                              loading = true;
+                            });
+                            await AuthFunctions.login(_emailController.text,
+                                _passwordController.text, context);
+                            setState(() {
+                              loading = false;
+                            });
+                          }
                         }
                       },
-                      child: Text(
-                        "Login",
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      child: loading
+                          ? SpinKitThreeInOut(
+                              color: Colors.white,
+                            )
+                          : Text(
+                              "Login",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                     ),
                   ),
                 ),

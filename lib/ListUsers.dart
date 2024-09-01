@@ -25,7 +25,7 @@ class _ListUsersState extends State<ListUsers> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(8.0),
             child: Center(
               child: Text(
                 "List of Authorized Users",
@@ -39,10 +39,8 @@ class _ListUsersState extends State<ListUsers> {
           Expanded(
             child: FutureBuilder<QuerySnapshot>(
               future: FirebaseFirestore.instance
-                  .collection("users")
-                  .doc(user?.uid)
-                  .collection("Devices")
-                  .get(),
+                  .collection("User Data")
+                  .get(), // Fetching the data from "User Data" collection
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 // Handle loading state
@@ -72,32 +70,38 @@ class _ListUsersState extends State<ListUsers> {
 
                 // Data is available, show the list
                 return ListView.builder(
+                  padding: EdgeInsets.all(0),
                   itemCount: snapshot.data!.docs.length,
                   itemBuilder: (context, index) {
                     var userData = snapshot.data!.docs[index].data()
                         as Map<String, dynamic>;
+                    var docId = snapshot
+                        .data!.docs[index].id; // Document ID for deletion
+
                     return ListTile(
+                      contentPadding: EdgeInsets.all(0),
                       leading: CircleAvatar(
-                        radius: 20,
-                        backgroundImage: NetworkImage(userData['imageUrl'] ??
-                            "https://picsum.photos/200/300"),
+                        radius: 30,
+                        backgroundImage: NetworkImage(
+                          userData['Image'] ?? "https://picsum.photos/200/300",
+                        ),
                       ),
-                      title: Text(userData['name'] ?? "Unknown Name"),
+                      title: Text(userData['Name'] ?? "Unknown Name"),
                       subtitle:
-                          Text(userData['relation'] ?? "No Relation Specified"),
+                          Text(userData['Relation'] ?? "No Relation Specified"),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.blue),
-                            onPressed: () {
-                              // Implement edit functionality
-                            },
-                          ),
+                          // IconButton(
+                          //   icon: const Icon(Icons.edit, color: Colors.blue),
+                          //   onPressed: () {
+                          //     // Implement edit functionality
+                          //   },
+                          // ),
                           IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
-                              // Implement delete functionality
+                              _deleteUser(docId);
                             },
                           ),
                         ],
@@ -108,61 +112,85 @@ class _ListUsersState extends State<ListUsers> {
               },
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20.0),
+            child: SizedBox(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddUsers(),
+                          ));
+                    },
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15))),
+                      backgroundColor: const MaterialStatePropertyAll(
+                        Color.fromARGB(255, 0, 0, 0),
+                      ),
+                      minimumSize: const MaterialStatePropertyAll(
+                        Size(150, 50),
+                      ),
+                    ),
+                    child: Text(
+                      "Add Another User",
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      debugPrint("Button pressed");
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Home(),
+                          ));
+                    },
+                    style: ButtonStyle(
+                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15))),
+                        backgroundColor: const MaterialStatePropertyAll(
+                          Color.fromARGB(255, 0, 0, 0),
+                        ),
+                        minimumSize:
+                            const MaterialStatePropertyAll(Size(150, 50))),
+                    child: Text(
+                      "Next",
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(bottom: 20.0),
-        child: SizedBox(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddUsers(),
-                      ));
-                },
-                style: ButtonStyle(
-                  shape: WidgetStateProperty.all(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30))),
-                  backgroundColor: const WidgetStatePropertyAll(
-                    Color.fromARGB(255, 0, 0, 0),
-                  ),
-                  minimumSize: const WidgetStatePropertyAll(
-                    Size(150, 50),
-                  ),
-                ),
-                child: Text(
-                  "Add Another Cam",
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Home(),
-                      ));
-                },
-                style: ButtonStyle(
-                    shape: WidgetStateProperty.all(RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30))),
-                    backgroundColor: const WidgetStatePropertyAll(
-                      Color.fromARGB(255, 0, 0, 0),
-                    ),
-                    minimumSize: const WidgetStatePropertyAll(Size(150, 50))),
-                child: Text(
-                  "Next",
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
+  }
+
+  // Function to delete a user
+  void _deleteUser(String docId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("User Data")
+          .doc(docId)
+          .delete();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('User deleted successfully')),
+      );
+
+      setState(() {
+        // Refresh the list after deletion
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete user: $e')),
+      );
+    }
   }
 }

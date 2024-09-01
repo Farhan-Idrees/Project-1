@@ -3,7 +3,9 @@
 import 'dart:io';
 
 import 'package:cameye/AddCam.dart';
-import 'package:cameye/customFormField.dart';
+import 'package:cameye/CustomFormWidgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -19,7 +21,22 @@ class _AddDetailsState extends State<AddDetails> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  // File? _image;
+  // Future<void> _pickImage() async {
+  //   final picker = ImagePicker();
+  //   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+  //   setState(() {
+  //     if (pickedFile != null) {
+  //       _image = File(pickedFile.path);
+  //     } else {
+  //       _image = null;
+  //     }
+  //   });
+  // }
+// Image Func
   File? _image;
+
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -31,6 +48,42 @@ class _AddDetailsState extends State<AddDetails> {
         _image = null;
       }
     });
+  }
+
+// Data Upload
+  Future<void> UploadVerify(String email, String password) async {
+    if (_image == null) {
+      // Handle case where image is null
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Please select an image')));
+      return;
+    }
+
+    try {
+      TaskSnapshot taskSnapshot = await FirebaseStorage.instance
+          .ref("User Photo")
+          .child(email)
+          .putFile(_image!);
+
+      String Url = await taskSnapshot.ref.getDownloadURL();
+
+      await FirebaseFirestore.instance
+          .collection("Admin Details")
+          .doc(email)
+          .set({
+        "Email": email,
+        "Password": password,
+        "Image": Url,
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('User added successfully')));
+      }
+    } catch (e) {
+      // Handle error
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Failed to add details: $e')));
+    }
   }
 
   @override
@@ -115,24 +168,6 @@ class _AddDetailsState extends State<AddDetails> {
                   },
                 ),
               ),
-              ElevatedButton(
-                  onPressed: () {
-                    style:
-                    ButtonStyle(
-                      shape: WidgetStateProperty.all(RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30))),
-                      backgroundColor: const WidgetStatePropertyAll(
-                        Color.fromARGB(255, 0, 0, 0),
-                      ),
-                      minimumSize: const WidgetStatePropertyAll(
-                        Size(double.infinity, 50),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    "Verify",
-                    style: TextStyle(color: Colors.white),
-                  )),
               Center(
                 child: Padding(
                   padding: EdgeInsets.all(8.0),
@@ -145,7 +180,9 @@ class _AddDetailsState extends State<AddDetails> {
                           alignment: Alignment.center),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          Navigator.push(
+                          UploadVerify(
+                              _emailController.text, _passwordController.text);
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                               builder: (context) => AddCam(),

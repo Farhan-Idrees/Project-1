@@ -1,7 +1,10 @@
-// ignore_for_file: avoid_types_as_parameter_names, non_constant_identifier_names, use_build_context_synchronously
+// ignore_for_file: avoid_types_as_parameter_names, non_constant_identifier_names, use_build_context_synchronously, unused_import, unused_field, file_names, prefer_const_constructors, duplicate_ignore, avoid_returning_null_for_void
+// ignore: unused_import
 import 'dart:typed_data';
-
 import 'package:cameye/AddCam.dart';
+import 'package:cameye/Home.dart';
+import 'package:cameye/ListUsers.dart';
+import 'package:cameye/otp.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cameye/AddDetails.dart';
 import 'package:cameye/Login.dart';
@@ -24,7 +27,7 @@ class AuthFunctions {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
 
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => AddCam()));
+          context, MaterialPageRoute(builder: (context) => Home()));
     } catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Error: $e")));
@@ -38,12 +41,15 @@ class AuthFunctions {
       String email,
       String phoneNumber,
       String password,
+      String image,
       BuildContext context //take these values from user by ui
       ) async {
     try {
-      await _auth.createUserWithEmailAndPassword(
-          email: email, password: password); //create user
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+              email: email, password: password); //create user
 
+      await userCredential.user?.sendEmailVerification();
       await FirebaseFirestore.instance
           .collection('users')
           .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -52,6 +58,7 @@ class AuthFunctions {
         'last_name': Lname,
         'email': email,
         'phone_number': phoneNumber,
+        "image": image
         // 'password': password,
       });
 
@@ -100,6 +107,22 @@ class AuthFunctions {
     try {
       // Get the user's UID
       String uid = FirebaseAuth.instance.currentUser!.uid;
+
+      // Check if a device with the same name already exists
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('Devices')
+          .where('cam_name', isEqualTo: Camname)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // If a device with the same name exists, show an error message
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Device with this name already exists"),
+        ));
+        return;
+      }
 
       // Create a new document in the devices subcollection
       DocumentReference deviceRef = FirebaseFirestore.instance
