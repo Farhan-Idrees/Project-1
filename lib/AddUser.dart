@@ -1,9 +1,10 @@
 // ignore_for_file: use_build_context_synchronously, prefer_const_constructors
 
 import 'dart:io';
-import 'package:cameye/CustomFormWidgets.dart';
+import 'package:cameye/Custom_widgets/CustomFormWidgets.dart';
 import 'package:cameye/ListUsers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -37,39 +38,54 @@ class _AddUsersState extends State<AddUsers> {
     });
   }
 
-  Future<void> UploadVerify(String name, String relation) async {
+  Future<void> uploadAndVerify(
+      String name, String relation, BuildContext context) async {
     if (_image == null) {
-      // Handle case where image is null
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Please select an image')));
       return;
     }
+    User? users = FirebaseAuth.instance.currentUser;
 
     try {
+      setState(() {
+        loading = true; // Start loading
+      });
+
       TaskSnapshot taskSnapshot = await FirebaseStorage.instance
           .ref("User Photo")
           .child(name)
           .putFile(_image!);
 
-      String Url = await taskSnapshot.ref.getDownloadURL();
+      String url = await taskSnapshot.ref.getDownloadURL();
 
-      await FirebaseFirestore.instance.collection("User Data").doc(name).set({
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(users!.uid)
+          .collection('Authorized Users')
+          .doc(name)
+          .set({
         "Name": name,
         "Relation": relation,
-        "Image": Url,
+        "Image": url,
       });
-      Navigator.push(
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('User added successfully')));
+
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => ListUsers(),
         ),
       );
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('User added successfully')));
     } catch (e) {
-      // Handle error
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Failed to add user: $e')));
+    } finally {
+      setState(() {
+        loading = false; // Stop loading
+      });
     }
   }
 
@@ -160,20 +176,20 @@ class _AddUsersState extends State<AddUsers> {
                     width: double.infinity,
                     child: TextButton(
                       style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(Colors.black),
-                        foregroundColor: WidgetStateProperty.all(Colors.white),
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.black),
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white),
                         alignment: Alignment.center,
                       ),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          UploadVerify(
-                            _nameController.text.toString(),
-                            _relationController.text.toString(),
-                          ).then((_) {});
+                          uploadAndVerify(_nameController.text.toString(),
+                              _relationController.text.toString(), context);
                         }
                       },
                       child: loading
-                          ? SpinKitThreeInOut(
+                          ? SpinKitThreeBounce(
                               color: Colors.white,
                             )
                           : Text(

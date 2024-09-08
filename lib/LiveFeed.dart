@@ -1,7 +1,10 @@
+// ignore_for_file: file_names, use_key_in_widget_constructors, library_private_types_in_public_api, prefer_const_constructors, prefer_const_literals_to_create_immutables
+
 import 'package:camera/camera.dart';
-import 'package:cameye/AddUser.dart';
-import 'package:cameye/EProfile.dart';
-import 'package:cameye/ListUsers.dart';
+import 'package:cameye/EditProfile.dart';
+import 'package:cameye/Entries.dart';
+import 'package:cameye/Home.dart';
+import 'package:cameye/Notification.dart';
 import 'package:flutter/material.dart';
 
 class LiveMonitoringScreen extends StatefulWidget {
@@ -13,7 +16,7 @@ class _LiveMonitoringScreenState extends State<LiveMonitoringScreen> {
   late List<CameraDescription> cameras;
   late CameraController controller;
   bool isCameraInitialized = false;
-  int _currentIndex = 3;
+  int _currentIndex = 2;
   @override
   void initState() {
     super.initState();
@@ -49,40 +52,44 @@ class _LiveMonitoringScreenState extends State<LiveMonitoringScreen> {
     return Scaffold(
         appBar: AppBar(
           title: const Text(
-            'Live Monitoring',
+            'Live Feeding',
             style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
           backgroundColor: Colors.white,
-          leading: IconButton(
-            icon: Icon(Icons.menu, color: Colors.black),
-            onPressed: () {
-              // Open Drawer
-            },
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.help_outline, color: Colors.black),
-              onPressed: () {
-                // Help action
-              },
-            ),
-          ],
+          // leading: IconButton(
+          //   icon: Icon(Icons.menu, color: Colors.black),
+          //   onPressed: () {
+          //     // Open Drawer
+          //   },
+          // ),
         ),
-        body: isCameraInitialized
-            ? Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    _buildCameraPreviewWidget(),
-                    SizedBox(height: 20),
-                    _buildCameraPreviewWidget(),
-                  ],
+        body: SingleChildScrollView(
+          child: isCameraInitialized
+              ? Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        height: 400,
+                        child: _buildCameraPreviewWidget(),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 400,
+                        child: _buildCameraPreviewWidget(),
+                      ),
+                    ],
+                  ),
+                )
+              : Center(
+                  child: CircularProgressIndicator(),
                 ),
-              )
-            : Center(
-                child: CircularProgressIndicator(),
-              ),
+        ),
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           currentIndex: _currentIndex,
@@ -91,38 +98,40 @@ class _LiveMonitoringScreenState extends State<LiveMonitoringScreen> {
             setState(() {
               _currentIndex = index;
             });
-            if (index == 1) {
+            if (index == 0) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ListUsers()),
+                MaterialPageRoute(builder: (context) => Home()),
+              );
+            } else if (index == 1) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Entries()),
               );
             } else if (index == 2) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AddUsers()),
+                MaterialPageRoute(builder: (context) => LiveMonitoringScreen()),
               );
             } else if (index == 3) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LiveMonitoringScreen()),
+                MaterialPageRoute(builder: (context) => Notifications()),
               );
             } else if (index == 4) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => EditProfileScreen()),
+                MaterialPageRoute(builder: (context) => EditProfile()),
               );
             }
           },
           items: [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Entires'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.list), label: 'List Users'),
+                icon: Icon(Icons.live_tv), label: 'Live Monitoring'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.person_add_alt_1), label: 'Add Users'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.live_tv), label: 'Live Streaming'),
-            // BottomNavigationBarItem(
-            //     icon: Icon(Icons.notification_important),
-            //     label: 'Notification'),
+                icon: Icon(Icons.notifications), label: 'Notification'),
             BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
           ],
         ));

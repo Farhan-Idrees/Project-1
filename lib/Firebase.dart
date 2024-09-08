@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:cameye/AddCam.dart';
 import 'package:cameye/Home.dart';
 import 'package:cameye/ListUsers.dart';
-import 'package:cameye/otp.dart';
+import 'package:cameye/OTPVerification.dart.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cameye/AddDetails.dart';
 import 'package:cameye/Login.dart';
@@ -33,6 +33,7 @@ class AuthFunctions {
           .showSnackBar(SnackBar(content: Text("Error: $e")));
     }
   }
+
   // Signup Function
 
   static Future<void> signUp(
@@ -49,7 +50,6 @@ class AuthFunctions {
           await _auth.createUserWithEmailAndPassword(
               email: email, password: password); //create user
 
-      await userCredential.user?.sendEmailVerification();
       await FirebaseFirestore.instance
           .collection('users')
           .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -62,8 +62,12 @@ class AuthFunctions {
         // 'password': password,
       });
 
+      await userCredential.user?.sendEmailVerification();
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Login()));
+          context,
+          MaterialPageRoute(
+            builder: (context) => AddCam(),
+          ));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Error:$e "),
@@ -97,11 +101,13 @@ class AuthFunctions {
   static Future<void> logout(BuildContext context) async {
     await _auth.signOut().then((value) {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Login()));
+          context, MaterialPageRoute(builder: (context) => AddCam()));
     });
   }
 
-// Add CAm
+
+
+// Add Cam
   static Future<void> addCam(
       String Camname, String CamIP, BuildContext context) async {
     try {
@@ -151,3 +157,4 @@ class AuthFunctions {
     }
   }
 }
+

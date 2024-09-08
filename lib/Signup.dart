@@ -1,18 +1,23 @@
+import 'package:flutter/material.dart';
 import 'dart:io';
 
-import 'package:cameye/CustomFormWidgets.dart';
+import 'package:cameye/Custom_widgets/CustomFormWidgets.dart';
 import 'package:cameye/Firebase.dart';
+import 'package:email_auth/email_auth.dart';
+import 'package:email_otp/email_otp.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 
-class SignUp extends StatefulWidget {
-  const SignUp({super.key});
+class Signup extends StatefulWidget {
+  Signup({super.key});
 
   @override
-  State<SignUp> createState() => _SignUpState();
+  State<Signup> createState() => _SignupState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _SignupState extends State<Signup> {
   //Controller For SignUp form
   final _formKey = GlobalKey<FormState>();
   final _firstNameController = TextEditingController();
@@ -20,10 +25,12 @@ class _SignUpState extends State<SignUp> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
-  // final _imageController = TextEditingController();
+
+  bool loading = false;
+
   File? _image;
 
-  Future<void> _pickImage() async {
+  void _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
@@ -34,6 +41,18 @@ class _SignUpState extends State<SignUp> {
         _image = null;
       }
     });
+  }
+
+  void SendOTP() async {
+    EmailAuth emailAuth = EmailAuth(sessionName: "CamEye");
+
+    bool res = await emailAuth.sendOtp(
+        recipientMail: _emailController.text, otpLength: 6);
+    if (res) {
+      print("OTP send to your email");
+    } else {
+      print("Failed to send OTP");
+    }
   }
 
   @override
@@ -63,7 +82,7 @@ class _SignUpState extends State<SignUp> {
                 child: GestureDetector(
                   onTap: _pickImage,
                   child: CircleAvatar(
-                    radius: 75,
+                    radius: 65,
                     backgroundColor: Colors.grey[300],
                     backgroundImage: _image != null ? FileImage(_image!) : null,
                     child: _image == null
@@ -73,6 +92,18 @@ class _SignUpState extends State<SignUp> {
                             color: Colors.grey[700],
                           )
                         : null,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Text(
+                    "Upload your image",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -119,7 +150,7 @@ class _SignUpState extends State<SignUp> {
                         height: 10,
                       ),
                       CustomFormField(
-                        hintText: "xyz@gmil.com",
+                        hintText: "xyz@gmail.com",
                         icon: Icons.mail,
                         controller: _emailController,
                         fieldname: "E-mail",
@@ -128,7 +159,9 @@ class _SignUpState extends State<SignUp> {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your email';
                           } else if (!value.contains(RegExp(r'[@]'))) {
-                            return "Please enter your valid email contain '@'";
+                            return "Please enter a valid email containing '@'";
+                          } else if (!value.endsWith('@gmail.com')) {
+                            return "Please enter a Gmail address ending with '@gmail.com'";
                           }
                           return null;
                         },
@@ -137,12 +170,14 @@ class _SignUpState extends State<SignUp> {
                         height: 10,
                       ),
                       CustomFormField(
-                        hintText: "03XXXXXXXXX ",
+                        hintText: "03XXXXXXXXX",
                         icon: Icons.phone,
                         controller: _phoneController,
                         fieldname: "Phone Number",
                         keyboardType: TextInputType.phone,
                         validator: (value) {
+                          value = value
+                              ?.trim(); // Trim any leading or trailing spaces
                           if (value == null || value.isEmpty) {
                             return 'Please enter your phone number';
                           } else if (!RegExp(r'^03\d{9}$').hasMatch(value)) {
@@ -155,8 +190,8 @@ class _SignUpState extends State<SignUp> {
                         height: 10,
                       ),
                       CustomFormField(
-                        hintText: "Enter your strong passsword",
-                        icon: Icons.person,
+                        hintText: "Enter your strong password",
+                        icon: Icons.lock,
                         controller: _passwordController,
                         fieldname: "Password",
                         keyboardType: TextInputType.visiblePassword,
@@ -164,9 +199,9 @@ class _SignUpState extends State<SignUp> {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your password';
                           } else if (!RegExp(
-                                  r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{12,}$')
+                                  r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
                               .hasMatch(value)) {
-                            return 'Password must contain at least 12 characters, \nincluding an uppercase and a lowercase letter, \na number, and one special character.';
+                            return 'Password must contain at least 8 characters,\nincluding an uppercase and a lowercase letter,\nand one special character.';
                           }
                           return null;
                         },
@@ -174,39 +209,57 @@ class _SignUpState extends State<SignUp> {
                       const SizedBox(
                         height: 50,
                       ),
-                      Center(
-                        child: Padding(
+                      Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              style: const ButtonStyle(
-                                backgroundColor:
-                                    WidgetStatePropertyAll(Colors.black),
-                                foregroundColor:
-                                    WidgetStatePropertyAll(Colors.white),
-                              ),
-                              onPressed: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  AuthFunctions.signUp(
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.black),
+                              foregroundColor:
+                                  MaterialStateProperty.all(Colors.white),
+                            ),
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                setState(() {
+                                  loading = true;
+                                });
+
+                                try {
+                                  if (_image != null) {
+                                    await AuthFunctions.signUp(
                                       _firstNameController.text,
                                       _lastNameController.text,
                                       _emailController.text,
                                       _phoneController.text,
                                       _passwordController.text,
                                       _image!.path,
-                                      context);
+                                      context,
+                                    );
+                                  } else {
+                                    // Handle the case where _image is null
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                      content: Text("Please select an image"),
+                                    ));
+                                  }
+                                } finally {
+                                  setState(() {
+                                    loading = false;
+                                  });
                                 }
-                              },
-                              child: const Text(
-                                "SignUp",
-                                style: TextStyle(
-                                    fontSize: 24, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                              }
+                            },
+                            child: loading
+                                ? SpinKitThreeBounce(
+                                    color: Colors.white,
+                                  )
+                                : Text(
+                                    "SignUp",
+                                    style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                          )),
                     ],
                   ),
                 ),
@@ -216,5 +269,6 @@ class _SignUpState extends State<SignUp> {
         ),
       ),
     );
+    ;
   }
 }

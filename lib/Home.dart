@@ -1,10 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:cameye/AddCam.dart';
 import 'package:cameye/AddUser.dart';
-import 'package:cameye/EProfile.dart';
 import 'package:cameye/EditProfile.dart';
 import 'package:cameye/ListUsers.dart';
 import 'package:cameye/LiveFeed.dart';
+import 'package:cameye/Entries.dart';
 import 'package:cameye/Notification.dart';
 import 'package:flutter/material.dart';
 
@@ -31,14 +32,11 @@ class _HomeState extends State<Home> {
           ),
           actions: [
             IconButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Notifications(),
-                      ));
-                },
-                icon: Icon(Icons.notification_important))
+              icon: Icon(Icons.help_outline, color: Colors.black),
+              onPressed: () {
+                // Help action
+              },
+            ),
           ],
           centerTitle: true,
         ),
@@ -47,11 +45,12 @@ class _HomeState extends State<Home> {
             padding: EdgeInsets.zero,
             children: [
               const DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                ),
-                child: Text('Drawer Header'),
-              ),
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                  ),
+                  child: CircleAvatar(
+                    radius: 30,
+                  )),
               ListTile(
                 title: Text('Profile'),
                 leading: Icon(Icons.person),
@@ -60,6 +59,39 @@ class _HomeState extends State<Home> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => EditProfile(),
+                      ));
+                },
+              ),
+              ListTile(
+                title: Text('Add Camera'),
+                leading: Icon(Icons.camera_front_sharp),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddCam(),
+                      ));
+                },
+              ),
+              ListTile(
+                title: Text('User List'),
+                leading: Icon(Icons.people),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ListUsers(),
+                      ));
+                },
+              ),
+              ListTile(
+                title: Text('Add Authorized User'),
+                leading: Icon(Icons.person_add),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddUsers(),
                       ));
                 },
               ),
@@ -85,38 +117,40 @@ class _HomeState extends State<Home> {
             setState(() {
               _currentIndex = index;
             });
-            if (index == 1) {
+            if (index == 0) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ListUsers()),
+                MaterialPageRoute(builder: (context) => Home()),
+              );
+            } else if (index == 1) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Entries()),
               );
             } else if (index == 2) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AddUsers()),
+                MaterialPageRoute(builder: (context) => LiveMonitoringScreen()),
               );
             } else if (index == 3) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LiveMonitoringScreen()),
+                MaterialPageRoute(builder: (context) => Notifications()),
               );
             } else if (index == 4) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => EditProfileScreen()),
+                MaterialPageRoute(builder: (context) => EditProfile()),
               );
             }
           },
           items: [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Entires'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.list), label: 'List Users'),
+                icon: Icon(Icons.live_tv), label: 'Live Monitoring'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.person_add_alt_1), label: 'Add Users'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.live_tv), label: 'Live Streaming'),
-            // BottomNavigationBarItem(
-            //     icon: Icon(Icons.notification_important),
-            //     label: 'Notification'),
+                icon: Icon(Icons.notifications), label: 'Notification'),
             BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
           ],
         ));

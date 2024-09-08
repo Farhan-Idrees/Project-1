@@ -12,7 +12,7 @@ class ListUsers extends StatefulWidget {
 }
 
 class _ListUsersState extends State<ListUsers> {
-  final User? user = FirebaseAuth.instance.currentUser;
+  final User? users = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +39,10 @@ class _ListUsersState extends State<ListUsers> {
           Expanded(
             child: FutureBuilder<QuerySnapshot>(
               future: FirebaseFirestore.instance
-                  .collection("User Data")
-                  .get(), // Fetching the data from "User Data" collection
+                  .collection("users")
+                  .doc(users?.uid)
+                  .collection('Authorized Users')
+                  .get(), // Fetching the data
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 // Handle loading state
@@ -70,7 +72,7 @@ class _ListUsersState extends State<ListUsers> {
 
                 // Data is available, show the list
                 return ListView.builder(
-                  padding: EdgeInsets.all(0),
+                  padding: EdgeInsets.all(5),
                   itemCount: snapshot.data!.docs.length,
                   itemBuilder: (context, index) {
                     var userData = snapshot.data!.docs[index].data()
@@ -89,22 +91,11 @@ class _ListUsersState extends State<ListUsers> {
                       title: Text(userData['Name'] ?? "Unknown Name"),
                       subtitle:
                           Text(userData['Relation'] ?? "No Relation Specified"),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // IconButton(
-                          //   icon: const Icon(Icons.edit, color: Colors.blue),
-                          //   onPressed: () {
-                          //     // Implement edit functionality
-                          //   },
-                          // ),
-                          IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () {
-                              _deleteUser(docId);
-                            },
-                          ),
-                        ],
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {
+                          _deleteUser(docId);
+                        },
                       ),
                     );
                   },
@@ -143,7 +134,6 @@ class _ListUsersState extends State<ListUsers> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      debugPrint("Button pressed");
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
@@ -176,7 +166,9 @@ class _ListUsersState extends State<ListUsers> {
   void _deleteUser(String docId) async {
     try {
       await FirebaseFirestore.instance
-          .collection("User Data")
+          .collection("users")
+          .doc(users?.uid)
+          .collection('Authorized Users')
           .doc(docId)
           .delete();
 

@@ -1,4 +1,4 @@
-  import 'package:cameye/login.dart';
+import 'package:cameye/login.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -33,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             CircleAvatar(
               backgroundImage: AssetImage("assets/Logo.jpg"),
-              radius: 60,
+              radius: 70,
             ),
             SizedBox(height: 20),
             Text(
@@ -45,7 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           ],
         ),
-     ),
-);
-}
+      ),
+    );
+  }
 }

@@ -1,4 +1,4 @@
-import 'package:cameye/Login.dart';
+import 'package:cameye/Splash.dart';
 import 'package:cameye/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +15,8 @@ class CamEye extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // themeMode: ,
       debugShowCheckedModeBanner: false,
-      home: Login(),
+      home: SplashScreen(),
     );
   }
 }
