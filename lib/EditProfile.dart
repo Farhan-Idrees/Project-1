@@ -42,7 +42,7 @@ class _EditProfileState extends State<EditProfile> {
         _lastController.text = doc['last_name'] ?? '';
         _emailController.text = doc['email'] ?? '';
         _phoneController.text = doc['phone_number'] ?? '';
-        imageUrl = doc['image'] ?? ''; // Load image URL
+        imageUrl = doc['image'] ?? '';
       });
     }
   }

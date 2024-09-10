@@ -1,6 +1,5 @@
 // ignore_for_file: unnecessary_import, depend_on_referenced_packages, prefer_const_constructors, file_names, unused_import
 
-import 'package:cameye/AddDetails.dart';
 import 'package:cameye/Custom_widgets/CustomFormWidgets.dart';
 import 'package:cameye/Firebase.dart';
 import 'package:cameye/ForgetPassword.dart';

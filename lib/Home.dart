@@ -7,6 +7,8 @@ import 'package:cameye/ListUsers.dart';
 import 'package:cameye/LiveFeed.dart';
 import 'package:cameye/Entries.dart';
 import 'package:cameye/Notification.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -18,7 +20,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _currentIndex = 0;
-
+  final User? users = FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,16 +43,60 @@ class _HomeState extends State<Home> {
           centerTitle: true,
         ),
         drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
+          child: Column(
             children: [
-              const DrawerHeader(
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                  ),
-                  child: CircleAvatar(
-                    radius: 30,
-                  )),
+              StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(users?.uid)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  // if (snapshot.data!.doc(users?)) {
+                  final userDoc = snapshot.data!;
+                  return DrawerHeader(
+                    decoration: BoxDecoration(color: Colors.black),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(userDoc["image"]),
+                          radius: 30,
+                        ),
+                        // const SizedBox(
+                        //   width: 20,
+                        // ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              userDoc["first_name"],
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Colors.white),
+                            ),
+                            Text(
+                              userDoc["email"],
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                  color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
               ListTile(
                 title: Text('Profile'),
                 leading: Icon(Icons.person),
@@ -74,7 +120,7 @@ class _HomeState extends State<Home> {
                 },
               ),
               ListTile(
-                title: Text('User List'),
+                title: Text('Authorize Users List'),
                 leading: Icon(Icons.people),
                 onTap: () {
                   Navigator.push(
@@ -94,11 +140,6 @@ class _HomeState extends State<Home> {
                         builder: (context) => AddUsers(),
                       ));
                 },
-              ),
-              ListTile(
-                leading: Icon(Icons.settings),
-                title: Text('Settings'),
-                onTap: () {},
               ),
             ],
           ),
